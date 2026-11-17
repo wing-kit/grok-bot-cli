@@ -22,9 +22,12 @@ export function parseGatewayHeaders(raw) {
 export function headersFromEnsureSandbox(body) {
   if (!body || typeof body !== "object") return {};
   const mapped = normalizeHeaderMap(body.gatewayHeaders || body.gateway_headers);
-  if (Object.keys(mapped).length) return mapped;
-  const token = body.anyrunNetworkToken || body.anyrun_network_token || body.networkToken;
-  return token ? { "x-anyrun-network-token": String(token) } : {};
+  const network = body.anyrunNetworkToken || body.anyrun_network_token || body.networkToken;
+  const port = body.gatewayPortToken || body.gateway_port_token || body.anyrunPortToken || body.anyrun_port_token;
+  const tokens = {};
+  if (network) tokens["x-anyrun-network-token"] = String(network);
+  if (port) tokens["x-anyrun-port-token"] = String(port);
+  return { ...tokens, ...mapped };
 }
 
 export function headersFromEnv() {
